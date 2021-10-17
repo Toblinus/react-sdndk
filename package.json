@@ -13,6 +13,11 @@
     "trello"
   ],
   "author": "toblinus <anatoliy.blinkov3006@gmail.com>",
+  "homepage": "https://github.com/Toblinus/react-sdndk#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Toblinus/react-sdndk"
+  },
   "license": "MIT",
   "dependencies": {
     "react": "^17.0.2",
