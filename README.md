@@ -23,7 +23,7 @@ or
 $ yarn add react-sdndk
 ```
 
-## Usage
+## Created
 
 The module contains 3 types of entities:
 * `Board` - main component for making kanban board. It can contain a component called `Column`.
@@ -44,7 +44,7 @@ const MyBoard = () => {
 }
 ```
 
-### Creation `Board`
+### Creation `Column`
 ```ts
 import React from 'react';
 import { useColumn, CardDataType } from 'react-dnd-kanban';
@@ -96,6 +96,86 @@ const Card: React.FC<CardProps> = ({ children, id, colId, onCardDrop }) => {
     { children }
   </div>
 }
+```
+
+## Usage
+
+```ts
+const App: React.FC = () => {
+  const [cards, setCards] = React.useState<
+    (CardDataType & { content: React.ReactNode })[]
+    >([
+      {
+        id: "1",
+        colId: "1",
+        content: "card 1 col 1"
+      },
+      {
+        id: "2",
+        colId: "2",
+        content: "card 2 col 2"
+      },
+      {
+        id: "12",
+        colId: "1",
+        content: "card 3 col 1"
+      },
+    ]);
+
+    const swapCard = (target: CardDataType, current: CardDataType) => {
+      let targetIndex = -1, currentIndex = -1;
+      cards.forEach(({ id }, index) => {
+        if(id === target.id) targetIndex = index;
+        if(id === current.id) currentIndex = index;
+      })
+
+      if(targetIndex === -1 || currentIndex === -1) {
+        return;
+      }
+
+      setCards((prev) => {
+        const prevCards = [...prev];
+        [prevCards[targetIndex], prevCards[currentIndex]] = 
+          [prevCards[currentIndex], prevCards[targetIndex]];
+        return prevCards;
+      })
+    }
+
+  const entryCard = (card: CardDataType, col: string) => {
+    setCards((prev) => {
+      const target = prev.find(({ id }) =>  id === card.id);
+      const index = prev.indexOf(target);
+
+      if(!target || index < 0) {
+        return;
+      }
+
+      const newCards = [...prev];
+      newCards[index].colId = col;
+
+      return newCards;
+    })
+  } 
+
+  return <Board>
+    <Column id="1" onCardEntry={entryCard}>
+      {cards
+        .filter(({ colId }) => colId === "1")
+        .map(({ id, colId, content }) => (
+          <Card key={id} id={id} colId={colId} onCardDrop={swapCard}>{content}</Card>
+        ))}
+    </Column>
+    <Column id="2" onCardEntry={entryCard}>
+      {cards
+        .filter(({ colId }) => colId === "2")
+        .map(({ id, colId, content }) => (
+          <Card key={id} id={id} colId={colId} onCardDrop={swapCard}>{content}</Card>
+        ))}
+    </Column>
+  </Board>;
+}
+
+export default App;
 ```
 
 ### License
